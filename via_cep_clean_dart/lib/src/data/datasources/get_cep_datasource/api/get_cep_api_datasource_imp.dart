@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:via_cep_clean_dart/src/data/datasources/get_cep_datasource/get_cep_datasource.dart';
 import 'package:via_cep_clean_dart/src/data/dtos/via_cep_dto.dart';
 import 'package:via_cep_clean_dart/src/domain/entities/via_cep_entity.dart';
@@ -16,8 +17,11 @@ class GetCepApiDataSourceImp implements GetCepDataSource {
       } else {
         return Left(Exception('Error datasource caiu aqui'));
       }
-    } catch (e) {
-      return Left(Exception('Error datasource caiu aqui 2'));
+    } on DioError catch (e) {
+      if (e.response!.statusCode == 400) {
+        return Left(Exception('Link quebrado :/'));
+      }
+      return Left(Exception(e.message));
     }
   }
 }
